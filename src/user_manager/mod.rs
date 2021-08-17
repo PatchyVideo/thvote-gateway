@@ -128,7 +128,8 @@ pub async fn request_email_code(context: &Context, email: String) -> FieldResult
 	let submit_json = SendEmailVerifyCodeRequest {
 		email: email
 	};
-	Ok(postJSON(&format!("http://{}/v1/send-email-code", USER_MANAGER), submit_json).await?)
+	postJSON(&format!("http://{}/v1/send-email-code", USER_MANAGER), submit_json).await?;
+	Ok(true)
 }
 
 /// 使用手机帐号登录
@@ -149,6 +150,7 @@ pub async fn request_phone_code(context: &Context, phone: String) -> FieldResult
 	let submit_json = SendPhoneVerifyCodeRequest {
 		phone: phone
 	};
-	Ok(postJSON(&format!("http://{}/v1/send-sms-code", USER_MANAGER), submit_json).await?)
+	postJSON(&format!("http://{}/v1/send-sms-code", USER_MANAGER), submit_json).await?;
+	Ok(true)
 }
 
