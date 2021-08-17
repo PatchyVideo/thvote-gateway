@@ -1,8 +1,10 @@
+use jwt_simple::prelude::ES256kPublicKey;
+
 
 #[derive(Debug, Clone)]
 pub struct Context {
-    pub vote_token: Option<String>,
-    pub user_ip: String
+    pub user_ip: String,
+    pub public_key: ES256kPublicKey
 }
 
 impl juniper::Context for Context {}

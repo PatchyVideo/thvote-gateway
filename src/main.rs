@@ -10,6 +10,7 @@ use context::Context;
 use juniper_actix::{
 	graphiql_handler as gqli_handler, graphql_handler, playground_handler as play_handler,
 };
+use jwt_simple::prelude::ES256kKeyPair;
 
 #[macro_use]
 mod common;
@@ -33,10 +34,11 @@ async fn graphql(
 	payload: actix_web::web::Payload,
 	schema: web::Data<Schema>,
 ) -> Result<HttpResponse, Error> {
-	let vote_token = req.cookie("vote_token").map(|f| f.value().to_string());
+	//let vote_token = req.cookie("vote_token").map(|f| f.value().to_string());
 	let ctx = Context {
-		vote_token: vote_token,
-		user_ip: req.connection_info().realip_remote_addr().unwrap_or("unknown").to_string()
+		//vote_token: vote_token,
+		user_ip: req.connection_info().realip_remote_addr().unwrap_or("unknown").to_string(),
+		public_key: ES256kKeyPair::generate().public_key() // TODO
 	};
 	graphql_handler(&schema, &ctx, req, payload).await
 }

@@ -1,9 +1,16 @@
 
+use std::str::FromStr;
+
 use actix_web::client::Client;
+use chrono::{DateTime, Utc};
 use juniper::{FieldError, IntoFieldError, ScalarValue, graphql_value};
+use jwt_simple::prelude::UnixTimeStamp;
 use serde::{Deserialize, de::DeserializeOwned};
 use serde_derive::{Serialize};
 use thiserror::Error;
+
+// pub const VOTE_START: DateTime<Utc> = DateTime::from_str("2021-10-01 00:00:00GMT+8").unwrap();
+// pub const VOTE_END: DateTime<Utc> = DateTime::from_str("2021-10-15 00:00:00GMT+8").unwrap();
 
 #[derive(Deserialize)]
 pub struct ErrorResponse {
@@ -37,9 +44,9 @@ pub struct Error {
 	pub aux: String
 }
 
-#[derive(Clone, Serialize, Deserialize)]
-pub struct UserVerifyResult {
-	pub user_email: Option<String>
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct VoteTokenClaim {
+	pub vote_id: Option<String>
 }
 
 #[derive(juniper::GraphQLObject, Clone, Serialize, Deserialize)]

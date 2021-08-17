@@ -3,7 +3,7 @@ use juniper::graphql_value;
 
 use juniper::FieldResult;
 
-use crate::common::{Error, UserVerifyResult, PostResult};
+use crate::common::{Error, PostResult};
 
 use chrono::{DateTime, Utc};
 use serde_derive::{Serialize, Deserialize};
@@ -23,23 +23,31 @@ pub struct UserCreateRest {
 // ------------------------------------------------
 
 #[derive(juniper::GraphQLInputObject, Clone, Serialize, Deserialize)]
-#[graphql(description="SendVoteCodeInputs")]
-pub struct SendVoteTokenInputs {
-    pub email: String
+#[graphql(description="Email login inputs for existing voters")]
+pub struct EmailLoginInputsForExistingVoters {
+    pub email: String,
+    pub password: String
 }
 
 #[derive(juniper::GraphQLInputObject, Clone, Serialize, Deserialize)]
-#[graphql(description="Login inputs")]
-pub struct LoginInputs {
+#[graphql(description="Email login up inputs")]
+pub struct EmailLoginInputs {
     pub email: String,
-    pub password: String
+    pub verify_code: String
+}
+
+#[derive(juniper::GraphQLInputObject, Clone, Serialize, Deserialize)]
+#[graphql(description="Phone login inputs")]
+pub struct PhoneLoginInputs {
+    pub phone: String,
+    pub verify_code: String
 }
 
 #[derive(juniper::GraphQLObject, Clone, Serialize, Deserialize)]
 #[graphql(description="Login results")]
 pub struct LoginResults {
-    pub succeed: bool,
-    pub vote_token: String
+    /// 投票token，登陆失败了就是错误返回，不会得到这个结构体
+    pub vote_token: Option<String>
 }
 
 // ------------------------------------------------
@@ -48,14 +56,4 @@ pub struct LoginResults {
 
 use crate::services::*;
 
-pub fn sendVoteToken_impl(content: SendVoteTokenInputs) -> FieldResult<PostResult> {
-	Ok(PostResult::new())
-}
-
-pub fn login_impl(content: LoginInputs) -> FieldResult<LoginResults> {
-	Ok(LoginResults {
-        succeed: true,
-        vote_token: "thvote-2020-81180d4a1c77A7c3FDE".into()
-    })
-}
 

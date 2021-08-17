@@ -9,6 +9,9 @@ use self::submit_handler::CPSubmitGQL;
 use self::submit_handler::MusicSubmitGQL;
 use self::submit_handler::PaperSubmitGQL;
 use self::submit_handler::WorkSubmitGQL;
+use self::user_manager::EmailLoginInputs;
+use self::user_manager::EmailLoginInputsForExistingVoters;
+use self::user_manager::PhoneLoginInputs;
 
 use super::context::Context;
 
@@ -18,11 +21,11 @@ use submit_handler::{CharacterSubmitGQL};
 
 #[path="result_query/mod.rs"]
 mod result_query;
-use result_query::{CharacterRankResult, Reasons, FilterConditions, SingleCharacterResult};
+//use result_query::{CharacterRankResult, Reasons, FilterConditions, SingleCharacterResult};
 
 #[path="user_manager/mod.rs"]
 mod user_manager;
-use user_manager::{SendVoteTokenInputs, LoginInputs, LoginResults};
+use user_manager::{LoginResults};
 
 pub struct Query;
 
@@ -74,14 +77,27 @@ impl Mutation {
 	//     user_manager
 	// ------------------------------------------------
 
-	/// 发送投票代码
-	fn sendVoteCode(context: &Context, content: SendVoteTokenInputs) -> FieldResult<PostResult> {
-		user_manager::sendVoteToken_impl(content)
+	/// 老用户使用email帐号登录
+	fn login_email_password(context: &Context, content: EmailLoginInputsForExistingVoters) -> FieldResult<LoginResults> {
+		todo!()
 	}
 
-	/// 使用老帐号登录
-	fn login(context: &Context, content: LoginInputs) -> FieldResult<LoginResults> {
-		user_manager::login_impl(content)
+	/// 新用户使用email帐号登录
+	fn login_email(context: &Context, content: EmailLoginInputs) -> FieldResult<LoginResults> {
+		todo!()
+	}
+	/// 向邮箱发送验证码
+	fn request_email_code(context: &Context, email: String) -> FieldResult<bool> {
+		todo!()
+	}
+
+	/// 使用手机帐号登录
+	fn login_phone(context: &Context, content: PhoneLoginInputs) -> FieldResult<LoginResults> {
+		todo!()
+	}
+	/// 向手机发送验证码
+	fn request_phone_code(context: &Context, phone: String) -> FieldResult<bool> {
+		todo!()
 	}
 
 	// ------------------------------------------------
