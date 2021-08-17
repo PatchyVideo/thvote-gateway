@@ -17,11 +17,20 @@ pub struct ErrorResponse {
     code: u16,
     error: String,
     message: String,
+	detail: Option<String>,
+	sid: Option<String>,
+	nickname: Option<String>
 }
 
 impl ErrorResponse {
-	pub fn into_service_error(&self) -> ServiceError {
+	pub fn into_service_error(self) -> ServiceError {
+		if let Some(sid) = self.sid {
+			return ServiceError::RedirectToSignup { sid: sid, nickname: self.nickname };
+		}
 		match self.code {
+			401 => {
+				ServiceError::IncorrectLogin
+			},
 			422 => {
 				ServiceError::InvalidContent
 			},
@@ -62,6 +71,10 @@ pub enum ServiceError {
 	TooManyAttempts,
 	#[error("Forbidden")]
 	Forbidden,
+	#[error("Incorrect login")]
+	IncorrectLogin,
+	#[error("Redirect to signup")]
+	RedirectToSignup { sid: String, nickname: Option<String> },
 	#[error("Unknown Internal Error")]
 	Unknown
 }
@@ -102,6 +115,20 @@ impl<S: ScalarValue> IntoFieldError<S> for ServiceError {
 					}),
 				)
 			},
+			ServiceError::IncorrectLogin => FieldError::new(
+				"Incorrect login",
+				graphql_value!({
+					"type": "IncorrectLogin"
+				}),
+			),
+			ServiceError::RedirectToSignup { sid, nickname } => FieldError::new(
+				"RedirectToSignup",
+				graphql_value!({
+					"type": "RedirectToSignup",
+					"sid": sid,
+					"nickname": nickname
+				}),
+			),
 		}
 	}
 }

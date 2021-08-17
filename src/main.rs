@@ -37,6 +37,8 @@ async fn graphql(
 	//let vote_token = req.cookie("vote_token").map(|f| f.value().to_string());
 	let ctx = Context {
 		//vote_token: vote_token,
+		additional_fingureprint: None,
+		// TODO: additional fingerprint
 		user_ip: req.connection_info().realip_remote_addr().unwrap_or("unknown").to_string(),
 		public_key: ES256kKeyPair::generate().public_key() // TODO
 	};

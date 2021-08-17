@@ -78,26 +78,26 @@ impl Mutation {
 	// ------------------------------------------------
 
 	/// 老用户使用email帐号登录
-	fn login_email_password(context: &Context, content: EmailLoginInputsForExistingVoters) -> FieldResult<LoginResults> {
-		todo!()
+	async fn login_email_password(context: &Context, email: String, password: String) -> FieldResult<LoginResults> {
+		user_manager::login_email_password(context, email, password).await
 	}
 
 	/// 新用户使用email帐号登录
-	fn login_email(context: &Context, content: EmailLoginInputs) -> FieldResult<LoginResults> {
-		todo!()
+	async fn login_email(context: &Context,  email: String, nickname: Option<String>, verify_code: String) -> FieldResult<LoginResults> {
+		user_manager::login_email(context, email, nickname, verify_code).await
 	}
 	/// 向邮箱发送验证码
-	fn request_email_code(context: &Context, email: String) -> FieldResult<bool> {
-		todo!()
+	async fn request_email_code(context: &Context, email: String) -> FieldResult<bool> {
+		user_manager::request_email_code(context, email).await
 	}
 
 	/// 使用手机帐号登录
-	fn login_phone(context: &Context, content: PhoneLoginInputs) -> FieldResult<LoginResults> {
-		todo!()
+	async fn login_phone(context: &Context, phone: String, nickname: Option<String>, verify_code: String) -> FieldResult<LoginResults> {
+		user_manager::login_phone(context, phone, nickname, verify_code).await
 	}
 	/// 向手机发送验证码
-	fn request_phone_code(context: &Context, phone: String) -> FieldResult<bool> {
-		todo!()
+	async fn request_phone_code(context: &Context, phone: String) -> FieldResult<bool> {
+		user_manager::request_phone_code(context, phone).await
 	}
 
 	// ------------------------------------------------
