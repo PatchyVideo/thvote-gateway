@@ -47,7 +47,7 @@ pub struct PhoneLoginInputs {
 #[graphql(description="Login results")]
 pub struct LoginResults {
     /// 投票token，登陆失败了就是错误返回，不会得到这个结构体
-    pub vote_token: Option<String>
+    pub vote_token: String
 }
 
 // ------------------------------------------------
