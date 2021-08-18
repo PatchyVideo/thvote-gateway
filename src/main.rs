@@ -1,7 +1,7 @@
 #![allow(non_snake_case)]
 extern crate juniper;
 
-use std::io;
+use std::io::{self, Read};
 use std::sync::Arc;
 
 
@@ -10,7 +10,7 @@ use context::Context;
 use juniper_actix::{
 	graphiql_handler as gqli_handler, graphql_handler, playground_handler as play_handler,
 };
-use jwt_simple::prelude::ES256kKeyPair;
+use jwt_simple::prelude::{ES256kKeyPair, ES256kPublicKey};
 
 #[macro_use]
 mod common;
@@ -22,6 +22,15 @@ use std::os::raw::*;
 
 
 use crate::schema::{create_schema, Schema};
+
+fn read_a_file(filename: &str) -> std::io::Result<Vec<u8>> {
+	let mut file = std::fs::File::open(filename)?;
+
+	let mut data = Vec::new();
+	file.read_to_end(&mut data)?;
+
+	return Ok(data);
+}
 
 async fn graphiql_handler() -> Result<HttpResponse, Error> {
 	gqli_handler("/graphql", None).await
@@ -40,7 +49,7 @@ async fn graphql(
 		additional_fingureprint: None,
 		// TODO: additional fingerprint
 		user_ip: req.connection_info().realip_remote_addr().unwrap_or("unknown").to_string(),
-		public_key: ES256kKeyPair::generate().public_key() // TODO
+		public_key: ES256kPublicKey::from_pem(std::str::from_utf8(&read_a_file("../keys/key-pub.pem").unwrap()).unwrap()).unwrap()
 	};
 	graphql_handler(&schema, &ctx, req, payload).await
 }
