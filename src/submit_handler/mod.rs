@@ -68,13 +68,13 @@ pub struct PaperSubmitRest {
 #[derive(juniper::GraphQLInputObject, Clone, Serialize, Deserialize)]
 #[graphql(description="Single character submit")]
 pub struct CharacterSubmit {
-	// 人物名
+	/// 人物名
 	pub name: String,
-	// 理由
+	/// 理由
 	pub reason: Option<String>,
-	// 本命
+	/// 本命
 	pub first: Option<bool>,
-	// 排名 [1,6]
+	/// 排名 [1,6]
 	pub rank: i32
 }
 
@@ -88,11 +88,17 @@ pub struct CharacterSubmitGQL {
 #[derive(juniper::GraphQLInputObject, Clone, Serialize, Deserialize)]
 #[graphql(description="Single cp submit")]
 pub struct CPSubmit {
+	/// 人物A
 	pub name_a: String,
+	/// 人物B
 	pub name_b: String,
+	/// 人物C（可选）
 	pub name_c: Option<String>,
+	/// 主动方（可选）
 	pub active: Option<String>,
+	/// 理由
 	pub reason: Option<String>,
+	/// 排名
 	pub rank: i32
 }
 
@@ -106,8 +112,11 @@ pub struct CPSubmitGQL {
 #[derive(juniper::GraphQLInputObject, Clone, Serialize, Deserialize)]
 #[graphql(description="Single music submit")]
 pub struct MusicSubmit {
+	/// 音乐名
 	pub name: String,
+	/// 理由
 	pub reason: Option<String>,
+	/// 排名[1,6]
 	pub rank: i32
 }
 
@@ -121,8 +130,11 @@ pub struct MusicSubmitGQL {
 #[derive(juniper::GraphQLInputObject, Clone, Serialize, Deserialize)]
 #[graphql(description="Single work submit")]
 pub struct WorkSubmit {
+	/// 作品名
 	pub name: String,
+	/// 理由
 	pub reason: Option<String>,
+	/// 排名[1,6]
 	pub rank: i32
 }
 
@@ -136,6 +148,7 @@ pub struct WorkSubmitGQL {
 #[derive(juniper::GraphQLInputObject, Clone, Serialize, Deserialize)]
 #[graphql(description="Single paper submit")]
 pub struct PaperSubmit {
+	/// 提问ID
 	pub id: String,
 	/// 答案
 	pub answer: String
@@ -144,7 +157,9 @@ pub struct PaperSubmit {
 #[derive(juniper::GraphQLInputObject, Clone)]
 #[graphql(description="Paper submit")]
 pub struct PaperSubmitGQL {
+	/// 投票token
 	pub vote_token: String,
+	/// 问卷的JSON字符串
 	pub paper_json: String
 }
 
