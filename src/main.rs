@@ -67,7 +67,7 @@ async fn main() -> io::Result<()> {
 			.service(web::resource("/graphql").route(web::post().to(graphql)))
 			.service(web::resource("/graphiql").route(web::get().to(graphiql_handler)))
 	})
-	.bind("0.0.0.0:8080")?
+	.bind("0.0.0.0:80")?
 	.run()
 	.await
 }
