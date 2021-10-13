@@ -5,6 +5,8 @@ use std::io::{self, Read};
 use std::sync::Arc;
 
 
+use actix_cors::Cors;
+use actix_web::http;
 use actix_web::{App, Error, HttpMessage, HttpResponse, HttpServer, client::ClientBuilder, cookie, middleware, web};
 use context::Context;
 use juniper_actix::{
@@ -65,17 +67,20 @@ async fn main() -> io::Result<()> {
 	HttpServer::new(move || {
 		App::new()
 			.data(create_schema())
-			// .wrap(
-			// 	Cors::new() // <- Construct CORS middleware builder
-			// 		.allowed_origin("http://localhost:3000")
-			// 		.allowed_origin("http://127.0.0.1:3000")
-			// 		.allowed_origin("http://localhost:8080")
-			// 		.allowed_origin("http://127.0.0.1:8080")
-			// 		.max_age(3600)
-			// 		.finish()
-			// )
+			.wrap(
+				Cors::default()
+				.allow_any_origin()
+				.allow_any_header()
+				.allow_any_method()
+			)
+			.wrap(middleware::Compress::default())
 			.wrap(middleware::Logger::default())
-			.service(web::resource("/graphql").route(web::post().to(graphql)))
+			.service(
+				web::resource("/graphql")
+					.route(web::post().to(graphql))
+					.route(web::get().to(graphql)),
+			)
+			.service(web::resource("/playground").route(web::get().to(playground_handler)))
 			.service(web::resource("/graphiql").route(web::get().to(graphiql_handler)))
 	})
 	.bind("0.0.0.0:80")?
