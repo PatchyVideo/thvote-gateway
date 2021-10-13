@@ -5,27 +5,19 @@ use juniper::RootNode;
 use chrono::{DateTime, Utc};
 
 use crate::common::PostResult;
-use self::submit_handler::CPSubmitGQL;
-use self::submit_handler::MusicSubmitGQL;
-use self::submit_handler::PaperSubmitGQL;
-use self::submit_handler::WorkSubmitGQL;
-use self::user_manager::EmailLoginInputs;
-use self::user_manager::EmailLoginInputsForExistingVoters;
-use self::user_manager::PhoneLoginInputs;
+use crate::submit_handler::CPSubmitGQL;
+use crate::submit_handler::CharacterSubmitGQL;
+use crate::submit_handler::MusicSubmitGQL;
+use crate::submit_handler::PaperSubmitGQL;
+use crate::submit_handler::WorkSubmitGQL;
+use crate::user_manager::EmailLoginInputs;
+use crate::user_manager::EmailLoginInputsForExistingVoters;
+use crate::user_manager::LoginResults;
+use crate::user_manager::PhoneLoginInputs;
+
+use crate::{user_manager, submit_handler, vote_data, result_query};
 
 use super::context::Context;
-
-#[path="submit_handler/mod.rs"]
-mod submit_handler;
-use submit_handler::{CharacterSubmitGQL};
-
-#[path="result_query/mod.rs"]
-mod result_query;
-//use result_query::{CharacterRankResult, Reasons, FilterConditions, SingleCharacterResult};
-
-#[path="user_manager/mod.rs"]
-mod user_manager;
-use user_manager::{LoginResults};
 
 pub struct Query;
 
@@ -57,6 +49,21 @@ impl Query {
 	// fn single_character_result(name: String, filter: Option<FilterConditions>) -> FieldResult<SingleCharacterResult> {
 	// 	result_query::single_character_result_impl(name, filter)
 	// }
+
+	
+	// ------------------------------------------------
+	//     vote data
+	// ------------------------------------------------
+	async fn listVotableCharacters(context: &Context) -> FieldResult<vote_data::VotableCharacters> {
+		vote_data::listVotableCharacters_impl(context).await
+	}
+	async fn listVotableWorks(context: &Context) -> FieldResult<vote_data::VotableWorks> {
+		vote_data::listVotableWorks_impl(context).await
+	}
+	async fn listVotableMusics(context: &Context) -> FieldResult<vote_data::VotableMusics> {
+		vote_data::listVotableMusics_impl(context).await
+
+	}
 }
 
 

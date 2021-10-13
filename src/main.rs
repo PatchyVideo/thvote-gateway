@@ -18,8 +18,10 @@ mod schema;
 mod services;
 mod context;
 
-use std::os::raw::*;
-
+pub mod user_manager;
+pub mod result_query;
+pub mod submit_handler;
+pub mod vote_data;
 
 use crate::schema::{create_schema, Schema};
 
