@@ -12,6 +12,16 @@ use thiserror::Error;
 // pub const VOTE_START: DateTime<Utc> = DateTime::from_str("2021-10-01 00:00:00GMT+8").unwrap();
 // pub const VOTE_END: DateTime<Utc> = DateTime::from_str("2021-10-15 00:00:00GMT+8").unwrap();
 
+#[derive(Clone, Serialize, Deserialize)]
+pub struct EmptyJSON {
+	
+}
+impl EmptyJSON {
+	pub fn new() -> EmptyJSON {
+		EmptyJSON {  }
+	}
+}
+
 #[derive(Deserialize)]
 pub struct ErrorResponse {
     code: u16,
@@ -193,18 +203,19 @@ pub async fn postJSON<T: DeserializeOwned, J: serde::ser::Serialize>(url: &str, 
 		.await;
 	let response = match response {
 		Ok(r) => r,
-		Err(_) => { return Err(ServiceError::Unknown); }
+		Err(e) => { println!("response error: {:?}", e); return Err(ServiceError::Unknown); }
 	};
-	if response.status().is_success() {
+	let status = response.status();
+	if status.is_success() {
 		let ret: T = match response.json().await {
 			Ok(a) => a,
-			Err(_) => { return Err(ServiceError::Unknown); }
+			Err(e) => { println!("response status {}: {:?}", status, e); return Err(ServiceError::Unknown); }
 		};
 		Ok(ret)
 	} else {
 		let err: ErrorResponse = match response.json().await {
 			Ok(a) => a,
-			Err(_) => { return Err(ServiceError::Unknown); }
+			Err(e) => { println!("response error 2: {:?}", e); return Err(ServiceError::Unknown); }
 		};
 		Err(err.into_service_error())
 	}

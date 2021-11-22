@@ -9,11 +9,9 @@ pub const RESULT_QUERY: &'static str = "127.0.0.1:1102";
 pub const SUBMIT_VALIDATOR: &'static str = "127.0.0.1:1103";
 
 #[cfg(not(debug_assertions))]
-pub const USER_MANAGER: &'static str = "http://user_manager";
+pub const USER_MANAGER: &'static str = "user-manager";
 #[cfg(not(debug_assertions))]
-pub const SUBMIT_HANDLER: &'static str = "http://submit_handler";
+pub const SUBMIT_HANDLER: &'static str = "submit-handler";
 #[cfg(not(debug_assertions))]
-pub const RESULT_QUERY: &'static str = "http://result_query";
-#[cfg(not(debug_assertions))]
-pub const SUBMIT_VALIDATOR: &'static str = "http://user_manager";
+pub const RESULT_QUERY: &'static str = "result-query";
 

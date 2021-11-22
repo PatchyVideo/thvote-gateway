@@ -107,6 +107,21 @@ impl Mutation {
 		user_manager::request_phone_code(context, phone).await
 	}
 
+	/// 更新邮箱
+	async fn update_email(context: &Context, user_token: String, email: String, verify_code: String) -> FieldResult<bool> {
+		user_manager::update_email(context, user_token, email, verify_code).await
+	}
+
+	/// 更新手机
+	async fn update_phone(context: &Context, user_token: String, phone: String, verify_code: String) -> FieldResult<bool> {
+		user_manager::update_phone(context, user_token, phone, verify_code).await
+	}
+
+	/// 更新密码
+	async fn update_password(context: &Context, user_token: String, old_password: String, new_password: String) -> FieldResult<bool> {
+		user_manager::update_password(context, user_token, old_password, new_password).await
+	}
+
 	// ------------------------------------------------
 	//     submit_handler
 	// ------------------------------------------------
