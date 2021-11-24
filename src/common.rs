@@ -215,7 +215,7 @@ pub async fn postJSON<T: DeserializeOwned, J: serde::ser::Serialize>(url: &str, 
 	} else {
 		let err: ErrorResponse = match response.json().await {
 			Ok(a) => a,
-			Err(e) => { println!("response error 2: {:?}", e); return Err(ServiceError::Unknown); }
+			Err(e) => { println!("response error 2: {:?} {:?}", status, e); return Err(ServiceError::Unknown); }
 		};
 		Err(err.into_service_error())
 	}

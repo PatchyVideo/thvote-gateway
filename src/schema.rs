@@ -64,6 +64,13 @@ impl Query {
 		vote_data::listVotableMusics_impl(context).await
 
 	}
+
+	// ------------------------------------------------
+	//     user management
+	// ------------------------------------------------
+	async fn userTokenStatus(context: &Context, user_token: String) -> FieldResult<bool> {
+		user_manager::user_token_status(context, user_token).await
+	}
 }
 
 

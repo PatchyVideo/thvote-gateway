@@ -205,6 +205,11 @@ pub struct UpdatePasswordInputs {
     pub meta: UserEventMeta
 }
 
+#[derive(Clone, Serialize, Deserialize)]
+pub struct TokenStatusInputs {
+	pub user_token: String
+}
+
 pub async fn update_email(context: &Context, user_token: String, email: String, verify_code: String) -> FieldResult<bool> {
 	let submit_json = UpdateEmailInputs {
 		email: email,
@@ -246,3 +251,12 @@ pub async fn update_password(context: &Context, user_token: String, old_password
 	let t: crate::common::EmptyJSON = postJSON(&format!("http://{}/v1/update-password", USER_MANAGER), submit_json).await?;
 	Ok(true)
 }
+
+pub async fn user_token_status(context: &Context, user_token: String) -> FieldResult<bool> {
+	let submit_json = TokenStatusInputs {
+		user_token: user_token
+	};
+	let t: crate::common::EmptyJSON = postJSON(&format!("http://{}/v1/user-token-status", USER_MANAGER), submit_json).await?;
+	Ok(true)
+}
+
