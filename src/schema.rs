@@ -69,7 +69,7 @@ impl Query {
 	//     user management
 	// ------------------------------------------------
 	async fn userTokenStatus(context: &Context, user_token: String) -> FieldResult<bool> {
-		user_manager::user_token_status(context, user_token).await
+		user_manager::user_token_status(user_token).await
 	}
 }
 
@@ -125,7 +125,7 @@ impl Mutation {
 	}
 
 	/// 更新密码
-	async fn update_password(context: &Context, user_token: String, old_password: String, new_password: String) -> FieldResult<bool> {
+	async fn update_password(context: &Context, user_token: String, old_password: Option<String>, new_password: String) -> FieldResult<bool> {
 		user_manager::update_password(context, user_token, old_password, new_password).await
 	}
 

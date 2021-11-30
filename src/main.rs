@@ -8,6 +8,7 @@ use std::sync::Arc;
 use actix_cors::Cors;
 use actix_web::http;
 use actix_web::{App, Error, HttpMessage, HttpResponse, HttpServer, client::ClientBuilder, cookie, middleware, web};
+use common::EmptyJSON;
 use context::Context;
 use juniper_actix::{
 	graphiql_handler as gqli_handler, graphql_handler, playground_handler as play_handler,
@@ -58,6 +59,17 @@ async fn graphql(
 	graphql_handler(&schema, &ctx, req, payload).await
 }
 
+
+async fn user_token_status(body: actix_web::web::Json<user_manager::TokenStatusInputs>) -> Result<web::Json<user_manager::TokenStatusOutput>, Error> {
+	let result = user_manager::user_token_status(body.user_token.clone()).await;
+	if result.is_ok() {
+		Ok(web::Json(user_manager::TokenStatusOutput { status: "valid".to_string() }))
+	} else {
+		Ok(web::Json(user_manager::TokenStatusOutput { status: "invalid".to_string() }))
+	}
+}
+
+
 #[actix_web::main]
 async fn main() -> io::Result<()> {
 	std::env::set_var("RUST_LOG", "actix_web=info");
@@ -82,6 +94,7 @@ async fn main() -> io::Result<()> {
 			)
 			.service(web::resource("/playground").route(web::get().to(playground_handler)))
 			.service(web::resource("/graphiql").route(web::get().to(graphiql_handler)))
+			.service(web::resource("/user-token-status").route(web::post().to(user_token_status)))
 	})
 	.bind("0.0.0.0:80")?
 	.run()

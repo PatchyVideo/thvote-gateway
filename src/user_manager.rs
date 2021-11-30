@@ -200,7 +200,7 @@ pub struct UpdatePhoneInputs {
 #[derive(Clone, Serialize, Deserialize)]
 pub struct UpdatePasswordInputs {
 	pub user_token: String,
-    pub old_password: String,
+    pub old_password: Option<String>,
     pub new_password: String,
     pub meta: UserEventMeta
 }
@@ -209,6 +209,12 @@ pub struct UpdatePasswordInputs {
 pub struct TokenStatusInputs {
 	pub user_token: String
 }
+
+#[derive(Clone, Serialize, Deserialize)]
+pub struct TokenStatusOutput {
+	pub status: String
+}
+
 
 pub async fn update_email(context: &Context, user_token: String, email: String, verify_code: String) -> FieldResult<bool> {
 	let submit_json = UpdateEmailInputs {
@@ -238,7 +244,7 @@ pub async fn update_phone(context: &Context, user_token: String, phone: String, 
 	Ok(true)
 }
 
-pub async fn update_password(context: &Context, user_token: String, old_password: String, new_password: String) -> FieldResult<bool> {
+pub async fn update_password(context: &Context, user_token: String, old_password: Option<String>, new_password: String) -> FieldResult<bool> {
 	let submit_json = UpdatePasswordInputs {
 		old_password: old_password,
 		new_password: new_password,
@@ -252,7 +258,7 @@ pub async fn update_password(context: &Context, user_token: String, old_password
 	Ok(true)
 }
 
-pub async fn user_token_status(context: &Context, user_token: String) -> FieldResult<bool> {
+pub async fn user_token_status(user_token: String) -> FieldResult<bool> {
 	let submit_json = TokenStatusInputs {
 		user_token: user_token
 	};
