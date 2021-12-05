@@ -74,8 +74,6 @@ pub struct CharacterSubmit {
 	pub reason: Option<String>,
 	/// 本命
 	pub first: Option<bool>,
-	/// 排名 [1,6]
-	pub rank: i32
 }
 
 #[derive(juniper::GraphQLInputObject, Clone)]
@@ -97,9 +95,7 @@ pub struct CPSubmit {
 	/// 主动方（可选）
 	pub active: Option<String>,
 	/// 理由
-	pub reason: Option<String>,
-	/// 排名
-	pub rank: i32
+	pub reason: Option<String>
 }
 
 #[derive(juniper::GraphQLInputObject, Clone)]
@@ -116,8 +112,8 @@ pub struct MusicSubmit {
 	pub name: String,
 	/// 理由
 	pub reason: Option<String>,
-	/// 排名[1,6]
-	pub rank: i32
+	/// 本命
+	pub first: Option<bool>,
 }
 
 #[derive(juniper::GraphQLInputObject, Clone)]
@@ -133,9 +129,7 @@ pub struct WorkSubmit {
 	/// 作品名
 	pub name: String,
 	/// 理由
-	pub reason: Option<String>,
-	/// 排名[1,6]
-	pub rank: i32
+	pub reason: Option<String>
 }
 
 #[derive(juniper::GraphQLInputObject, Clone)]
