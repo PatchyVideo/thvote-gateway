@@ -70,7 +70,8 @@ pub struct VoteTokenClaim {
 
 #[derive(juniper::GraphQLObject, Clone, Serialize, Deserialize)]
 pub struct PostResult {
-	pub errno: i32
+	code: i32,
+	message: String,
 }
 
 #[derive(Error, Debug)]
@@ -166,7 +167,8 @@ pub enum FilterConditionOp {
 impl PostResult {
 	pub fn new() -> PostResult {
 		PostResult {
-			errno: 0
+			code: 0,
+			message: "none".to_string()
 		}
 	}
 }

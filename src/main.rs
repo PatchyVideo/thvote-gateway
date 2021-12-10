@@ -14,6 +14,8 @@ use juniper_actix::{
 	graphiql_handler as gqli_handler, graphql_handler, playground_handler as play_handler,
 };
 use jwt_simple::prelude::{ES256kKeyPair, ES256kPublicKey};
+use once_cell::sync::OnceCell;
+use submit_handler::getVotingStatus_impl;
 
 #[macro_use]
 mod common;
@@ -27,6 +29,8 @@ pub mod submit_handler;
 pub mod vote_data;
 
 use crate::schema::{create_schema, Schema};
+
+static KEY: OnceCell<ES256kKeyPair> = OnceCell::new();
 
 fn read_a_file(filename: &str) -> std::io::Result<Vec<u8>> {
 	let mut file = std::fs::File::open(filename)?;
@@ -54,18 +58,32 @@ async fn graphql(
 		additional_fingureprint: None,
 		// TODO: additional fingerprint
 		user_ip: req.connection_info().realip_remote_addr().unwrap_or("unknown").to_string(),
-		public_key: ES256kPublicKey::from_pem(std::str::from_utf8(&read_a_file("../keys/key-pub.pem").unwrap()).unwrap()).unwrap()
+		public_key: KEY.get().unwrap().clone()
 	};
 	graphql_handler(&schema, &ctx, req, payload).await
 }
 
 
 async fn user_token_status(body: actix_web::web::Json<user_manager::TokenStatusInputs>) -> Result<web::Json<user_manager::TokenStatusOutput>, Error> {
-	let result = user_manager::user_token_status(body.user_token.clone()).await;
+	let result = user_manager::user_token_status(body.user_token.clone(), body.vote_token.clone()).await;
 	if result.is_ok() {
-		Ok(web::Json(user_manager::TokenStatusOutput { status: "valid".to_string() }))
+		let mut ret = user_manager::TokenStatusOutput { status: "valid".to_string(), voting_status: None };
+		let ctx = Context {
+			//vote_token: vote_token,
+			additional_fingureprint: None,
+			// TODO: additional fingerprint
+			user_ip: "".to_string(),
+			public_key: KEY.get().unwrap().clone()
+		};
+		if let Some(vote_token) = &body.vote_token {
+			let ret2 = getVotingStatus_impl(&ctx, vote_token.clone()).await;
+			if let Ok(voting_status) = ret2 {
+				ret.voting_status = Some(voting_status);
+			}
+		}
+		Ok(web::Json(ret))
 	} else {
-		Ok(web::Json(user_manager::TokenStatusOutput { status: "invalid".to_string() }))
+		Ok(web::Json(user_manager::TokenStatusOutput { status: "invalid".to_string(), voting_status: None }))
 	}
 }
 
@@ -74,6 +92,9 @@ async fn user_token_status(body: actix_web::web::Json<user_manager::TokenStatusI
 async fn main() -> io::Result<()> {
 	std::env::set_var("RUST_LOG", "actix_web=info");
 	env_logger::init();
+
+	let key = ES256kKeyPair::from_pem(std::str::from_utf8(&read_a_file("../keys/key-priv.pem").unwrap()).unwrap()).unwrap();
+	KEY.set(key).unwrap();
 
 	// Start http server
 	HttpServer::new(move || {

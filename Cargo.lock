@@ -2577,6 +2577,7 @@ dependencies = [
  "juniper_actix",
  "juniper_graphql_ws 0.3.0",
  "jwt-simple",
+ "once_cell",
  "reqwest",
  "serde",
  "serde_derive",

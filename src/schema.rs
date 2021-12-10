@@ -6,9 +6,13 @@ use chrono::{DateTime, Utc};
 
 use crate::common::PostResult;
 use crate::submit_handler::CPSubmitGQL;
+use crate::submit_handler::CPSubmitRestQuery;
 use crate::submit_handler::CharacterSubmitGQL;
+use crate::submit_handler::CharacterSubmitRestQuery;
 use crate::submit_handler::MusicSubmitGQL;
+use crate::submit_handler::MusicSubmitRestQuery;
 use crate::submit_handler::PaperSubmitGQL;
+use crate::submit_handler::PaperSubmitRestQuery;
 use crate::submit_handler::WorkSubmitGQL;
 use crate::user_manager::EmailLoginInputs;
 use crate::user_manager::EmailLoginInputsForExistingVoters;
@@ -68,8 +72,32 @@ impl Query {
 	// ------------------------------------------------
 	//     user management
 	// ------------------------------------------------
-	async fn userTokenStatus(context: &Context, user_token: String) -> FieldResult<bool> {
-		user_manager::user_token_status(user_token).await
+	async fn userTokenStatus(context: &Context, user_token: String, vote_token: Option<String>) -> FieldResult<bool> {
+		user_manager::user_token_status(user_token, vote_token).await
+	}
+
+	// ------------------------------------------------
+	//     submit_handler
+	// ------------------------------------------------
+	
+	/// Get Character
+	async fn getSubmitCharacterVote(context: &Context, vote_token: String) -> FieldResult<CharacterSubmitRestQuery> {
+		submit_handler::getSubmitCharacterVote_impl(context, vote_token).await
+	}
+
+	/// Get Music
+	async fn getSubmitMusicVote(context: &Context, vote_token: String) -> FieldResult<MusicSubmitRestQuery> {
+		submit_handler::getSubmitMusicVote_impl(context, vote_token).await
+	}
+
+	/// Get CP
+	async fn getSubmitCPVote(context: &Context, vote_token: String) -> FieldResult<CPSubmitRestQuery> {
+		submit_handler::getSubmitCPVote_impl(context, vote_token).await
+	}
+
+	/// Get Paper
+	async fn getSubmitPaperVote(context: &Context, vote_token: String) -> FieldResult<PaperSubmitRestQuery> {
+		submit_handler::getSubmitPaperVote_impl(context, vote_token).await
 	}
 }
 

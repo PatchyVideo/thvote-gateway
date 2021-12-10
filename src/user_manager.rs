@@ -6,6 +6,7 @@ use juniper::FieldResult;
 use crate::common::postJSON;
 use crate::common::{Error, PostResult};
 use crate::context::Context;
+use crate::submit_handler::VotingStatus;
 
 use chrono::{DateTime, Utc};
 use serde_derive::{Serialize, Deserialize};
@@ -207,12 +208,14 @@ pub struct UpdatePasswordInputs {
 
 #[derive(Clone, Serialize, Deserialize)]
 pub struct TokenStatusInputs {
-	pub user_token: String
+	pub user_token: String,
+	pub vote_token: Option<String>
 }
 
 #[derive(Clone, Serialize, Deserialize)]
 pub struct TokenStatusOutput {
-	pub status: String
+	pub status: String,
+	pub voting_status: Option<VotingStatus>
 }
 
 
@@ -258,9 +261,10 @@ pub async fn update_password(context: &Context, user_token: String, old_password
 	Ok(true)
 }
 
-pub async fn user_token_status(user_token: String) -> FieldResult<bool> {
+pub async fn user_token_status(user_token: String, vote_token: Option<String>) -> FieldResult<bool> {
 	let submit_json = TokenStatusInputs {
-		user_token: user_token
+		user_token: user_token,
+		vote_token: vote_token
 	};
 	let t: crate::common::EmptyJSON = postJSON(&format!("http://{}/v1/user-token-status", USER_MANAGER), submit_json).await?;
 	Ok(true)
