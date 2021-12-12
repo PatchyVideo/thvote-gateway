@@ -15,7 +15,7 @@ use juniper_actix::{
 };
 use jwt_simple::prelude::{ES256kKeyPair, ES256kPublicKey};
 use once_cell::sync::OnceCell;
-use submit_handler::getVotingStatus_impl;
+use submit_handler::{getVotingStatus_impl, getSubmitPaperVote_impl};
 
 #[macro_use]
 mod common;
@@ -67,7 +67,7 @@ async fn graphql(
 async fn user_token_status(body: actix_web::web::Json<user_manager::TokenStatusInputs>) -> Result<web::Json<user_manager::TokenStatusOutput>, Error> {
 	let result = user_manager::user_token_status(body.user_token.clone(), body.vote_token.clone()).await;
 	if result.is_ok() {
-		let mut ret = user_manager::TokenStatusOutput { status: "valid".to_string(), voting_status: None };
+		let mut ret = user_manager::TokenStatusOutput { status: "valid".to_string(), voting_status: None, papers_json: None };
 		let ctx = Context {
 			//vote_token: vote_token,
 			additional_fingureprint: None,
@@ -78,12 +78,15 @@ async fn user_token_status(body: actix_web::web::Json<user_manager::TokenStatusI
 		if let Some(vote_token) = &body.vote_token {
 			let ret2 = getVotingStatus_impl(&ctx, vote_token.clone()).await;
 			if let Ok(voting_status) = ret2 {
-				ret.voting_status = Some(voting_status);
+				ret.voting_status = Some(voting_status.clone());
+				if voting_status.papers {
+					ret.papers_json = Some(getSubmitPaperVote_impl(&ctx, vote_token.clone()).await.unwrap().papers_json);
+				}
 			}
 		}
 		Ok(web::Json(ret))
 	} else {
-		Ok(web::Json(user_manager::TokenStatusOutput { status: "invalid".to_string(), voting_status: None }))
+		Ok(web::Json(user_manager::TokenStatusOutput { status: "invalid".to_string(), voting_status: None, papers_json: None }))
 	}
 }
 

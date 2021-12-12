@@ -157,6 +157,11 @@ impl Mutation {
 		user_manager::update_password(context, user_token, old_password, new_password).await
 	}
 
+	/// 账号注销
+	async fn remove_voter(context: &Context, user_token: String, old_password: Option<String>) -> FieldResult<bool> {
+		user_manager::remove_voter(context, user_token, old_password).await
+	}
+
 	// ------------------------------------------------
 	//     submit_handler
 	// ------------------------------------------------

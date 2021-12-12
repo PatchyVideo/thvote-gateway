@@ -73,7 +73,7 @@ pub struct CPSubmitRestQuery {
 
 #[derive(Clone, Serialize, Deserialize)]
 pub struct PaperSubmitRest {
-	pub papers: serde_json::Map<String, serde_json::Value>,
+	pub papers_json: String,
 	pub meta: SubmitMetadata
 }
 
@@ -229,7 +229,7 @@ pub struct QuerySubmitRest {
 	pub vote_id: String,
 }
 
-#[derive(juniper::GraphQLObject, Clone, Serialize, Deserialize)]
+#[derive(juniper::GraphQLObject, Clone, Debug, Serialize, Deserialize)]
 #[graphql(description="投票进度")]
 pub struct VotingStatus {
 	/// 人物是否完成
@@ -323,23 +323,16 @@ pub async fn submitWorkVote_impl(context: &Context, content: &WorkSubmitGQL) -> 
 }
 
 pub async fn submitPaperVote_impl(context: &Context, content: &PaperSubmitGQL) -> FieldResult<PostResult> {
+	println!("submitPaperVote_impl");
 	let mut options = VerificationOptions::default();
 	options.allowed_audiences = Some(HashSet::from_strings(&["vote"]));
 	let result = context.public_key.public_key().verify_token::<VoteTokenClaim>(&content.vote_token, Some(options));
 	if let Ok(claim) = result {
 		let submit_json = PaperSubmitRest {
 			meta: generate_submit_metadata(&claim.custom.vote_id.ok_or(ServiceError::Forbidden)?, context),
-			papers: {
-				let parsed: serde_json::Map<String, serde_json::Value> = match serde_json::from_str(&content.paper_json) {
-					Ok(a) => a,
-					Err(_) => {
-						return Err(ServiceError::InvalidContent.into());
-					}
-				};
-				parsed
-			}
+			papers_json: content.paper_json.clone()
 		};
-		let post_result: PostResult = postJSON(&format!("http://{}/v1/work/", SUBMIT_HANDLER), submit_json).await?;
+		let post_result: PostResult = postJSON(&format!("http://{}/v1/paper/", SUBMIT_HANDLER), submit_json).await?;
 		Ok(post_result)
 	} else {
 		return Err(ServiceError::Forbidden.into())
@@ -399,9 +392,8 @@ pub async fn getSubmitPaperVote_impl(context: &Context, vote_token: String) -> F
 		let query_json = QuerySubmitRest {
 			vote_id: claim.custom.vote_id.ok_or(ServiceError::Forbidden)?
 		};
-		let post_result: PaperSubmitRest = postJSON(&format!("http://{}/v1/get-paper/", SUBMIT_HANDLER), query_json).await?;
-		let json_str = serde_json::to_string(&post_result.papers)?;
-		Ok(PaperSubmitRestQuery { papers_json: json_str })
+		let post_result: PaperSubmitRestQuery = postJSON(&format!("http://{}/v1/get-paper/", SUBMIT_HANDLER), query_json).await?;
+		Ok(post_result)
 	} else {
 		return Err(ServiceError::Forbidden.into())
 	}

@@ -206,7 +206,7 @@ pub struct UpdatePasswordInputs {
     pub meta: UserEventMeta
 }
 
-#[derive(Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct TokenStatusInputs {
 	pub user_token: String,
 	pub vote_token: Option<String>
@@ -215,9 +215,16 @@ pub struct TokenStatusInputs {
 #[derive(Clone, Serialize, Deserialize)]
 pub struct TokenStatusOutput {
 	pub status: String,
-	pub voting_status: Option<VotingStatus>
+	pub voting_status: Option<VotingStatus>,
+	pub papers_json: Option<String>
 }
 
+#[derive(Clone, Serialize, Deserialize)]
+pub struct RemoveVoterRequest {
+	pub user_token: String,
+    pub old_password: Option<String>,
+    pub meta: UserEventMeta
+}
 
 pub async fn update_email(context: &Context, user_token: String, email: String, verify_code: String) -> FieldResult<bool> {
 	let submit_json = UpdateEmailInputs {
@@ -267,6 +274,19 @@ pub async fn user_token_status(user_token: String, vote_token: Option<String>) -
 		vote_token: vote_token
 	};
 	let t: crate::common::EmptyJSON = postJSON(&format!("http://{}/v1/user-token-status", USER_MANAGER), submit_json).await?;
+	Ok(true)
+}
+
+pub async fn remove_voter(context: &Context, user_token: String, old_password: Option<String>) -> FieldResult<bool> {
+	let submit_json = RemoveVoterRequest {
+		old_password: old_password,
+		user_token: user_token,
+		meta: UserEventMeta {
+			user_ip: context.user_ip.clone(),
+			additional_fingureprint: context.additional_fingureprint.clone()
+		}
+	};
+	let t: crate::common::EmptyJSON = postJSON(&format!("http://{}/v1/remove-voter", USER_MANAGER), submit_json).await?;
 	Ok(true)
 }
 
