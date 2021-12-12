@@ -4,7 +4,6 @@ use juniper::RootNode;
 
 use chrono::{DateTime, Utc};
 
-use crate::common::PostResult;
 use crate::submit_handler::CPSubmitGQL;
 use crate::submit_handler::CPSubmitRestQuery;
 use crate::submit_handler::CharacterSubmitGQL;
@@ -167,27 +166,22 @@ impl Mutation {
 	// ------------------------------------------------
 
 	/// Character
-	async fn submitCharacterVote(context: &Context, content: CharacterSubmitGQL) -> FieldResult<PostResult> {
+	async fn submitCharacterVote(context: &Context, content: CharacterSubmitGQL) -> FieldResult<bool> {
 		submit_handler::submitCharacterVote_impl(context, &content).await
 	}
 
 	/// music
-	async fn submitMusicVote(context: &Context, content: MusicSubmitGQL) -> FieldResult<PostResult> {
+	async fn submitMusicVote(context: &Context, content: MusicSubmitGQL) -> FieldResult<bool> {
 	   submit_handler::submitMusicVote_impl(context, &content).await
 	}
-
-	/// work
-	async fn submitWorkVote(context: &Context, content: WorkSubmitGQL) -> FieldResult<PostResult> {
-		submit_handler::submitWorkVote_impl(context, &content).await
-	}
-
+	
 	/// CP
-	async fn submitCPVote(context: &Context, content: CPSubmitGQL) -> FieldResult<PostResult> {
+	async fn submitCPVote(context: &Context, content: CPSubmitGQL) -> FieldResult<bool> {
 		submit_handler::submitCPVote_impl(context, &content).await
 	}
 
 	/// paper
-	async fn submitPaperVote(context: &Context, content: PaperSubmitGQL) -> FieldResult<PostResult> {
+	async fn submitPaperVote(context: &Context, content: PaperSubmitGQL) -> FieldResult<bool> {
 		submit_handler::submitPaperVote_impl(context, &content).await
 	}
 }

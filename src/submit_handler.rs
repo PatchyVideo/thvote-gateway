@@ -1,13 +1,14 @@
 
+use juniper::IntoFieldError;
 use juniper::graphql_value;
 
 use juniper::FieldResult;
+use pvrustlib::EmptyJSON;
+use pvrustlib::ServiceError;
+use pvrustlib::json_request_gateway;
 
-use crate::common::ServiceError;
+use crate::common::SERVICE_NAME;
 use crate::common::VoteTokenClaim;
-use crate::common::getJSON;
-use crate::common::postJSON;
-use crate::common::{Error, PostResult};
 use crate::context::Context;
 use jwt_simple::{prelude::*, algorithms::ECDSAP256kPublicKeyLike};
 
@@ -257,85 +258,69 @@ pub fn generate_submit_metadata(vote_id: &str, context: &Context) -> SubmitMetad
 
 use crate::services::*;
 
-pub async fn submitCharacterVote_impl(context: &Context, content: &CharacterSubmitGQL) -> FieldResult<PostResult> {
+pub async fn submitCharacterVote_impl(context: &Context, content: &CharacterSubmitGQL) -> FieldResult<bool> {
 	let mut options = VerificationOptions::default();
 	options.allowed_audiences = Some(HashSet::from_strings(&["vote"]));
 	let result = context.public_key.public_key().verify_token::<VoteTokenClaim>(&content.vote_token, Some(options));
 	println!("{:?}", result);
 	if let Ok(claim) = result {
 		let submit_json = CharacterSubmitRest {
-			meta: generate_submit_metadata(&claim.custom.vote_id.ok_or(ServiceError::Forbidden)?, context),
+			meta: generate_submit_metadata(&claim.custom.vote_id.ok_or(ServiceError::new_jwt_error(SERVICE_NAME, None))?, context),
 			characters: content.characters.clone(),
 		};
-		let post_result: PostResult = postJSON(&format!("http://{}/v1/character/", SUBMIT_HANDLER), submit_json).await?;
-		Ok(post_result)
+		
+		let post_result: EmptyJSON = json_request_gateway(SERVICE_NAME, &format!("http://{}/v1/character/", SUBMIT_HANDLER), submit_json).await?;
+		Ok(true)
 	} else {
-		return Err(ServiceError::Forbidden.into())
+		return Err(ServiceError::new_jwt_error(SERVICE_NAME, None).into());
 	}
 }
 
-pub async fn submitMusicVote_impl(context: &Context, content: &MusicSubmitGQL) -> FieldResult<PostResult> {
+pub async fn submitMusicVote_impl(context: &Context, content: &MusicSubmitGQL) -> FieldResult<bool> {
 	let mut options = VerificationOptions::default();
 	options.allowed_audiences = Some(HashSet::from_strings(&["vote"]));
 	let result = context.public_key.public_key().verify_token::<VoteTokenClaim>(&content.vote_token, Some(options));
 	if let Ok(claim) = result {
 		let submit_json = MusicSubmitRest {
-			meta: generate_submit_metadata(&claim.custom.vote_id.ok_or(ServiceError::Forbidden)?, context),
+			meta: generate_submit_metadata(&claim.custom.vote_id.ok_or(ServiceError::new_jwt_error(SERVICE_NAME, None))?, context),
 			music: content.musics.clone(),
 		};
-		let post_result: PostResult = postJSON(&format!("http://{}/v1/music/", SUBMIT_HANDLER), submit_json).await?;
-		Ok(post_result)
+		let post_result: EmptyJSON = json_request_gateway(SERVICE_NAME, &format!("http://{}/v1/music/", SUBMIT_HANDLER), submit_json).await?;
+		Ok(true)
 	} else {
-		return Err(ServiceError::Forbidden.into())
+		return Err(ServiceError::new_jwt_error(SERVICE_NAME, None).into());
 	}
 }
 
-pub async fn submitCPVote_impl(context: &Context, content: &CPSubmitGQL) -> FieldResult<PostResult> {
+pub async fn submitCPVote_impl(context: &Context, content: &CPSubmitGQL) -> FieldResult<bool> {
 	let mut options = VerificationOptions::default();
 	options.allowed_audiences = Some(HashSet::from_strings(&["vote"]));
 	let result = context.public_key.public_key().verify_token::<VoteTokenClaim>(&content.vote_token, Some(options));
 	if let Ok(claim) = result {
 		let submit_json = CPSubmitRest {
-			meta: generate_submit_metadata(&claim.custom.vote_id.ok_or(ServiceError::Forbidden)?, context),
+			meta: generate_submit_metadata(&claim.custom.vote_id.ok_or(ServiceError::new_jwt_error(SERVICE_NAME, None))?, context),
 			cps: content.cps.clone(),
 		};
-		let post_result: PostResult = postJSON(&format!("http://{}/v1/cp/", SUBMIT_HANDLER), submit_json).await?;
-		Ok(post_result)
+		let post_result: EmptyJSON = json_request_gateway(SERVICE_NAME, &format!("http://{}/v1/cp/", SUBMIT_HANDLER), submit_json).await?;
+		Ok(true)
 	} else {
-		return Err(ServiceError::Forbidden.into())
+		return Err(ServiceError::new_jwt_error(SERVICE_NAME, None).into());
 	}
 }
 
-pub async fn submitWorkVote_impl(context: &Context, content: &WorkSubmitGQL) -> FieldResult<PostResult> {
-	let mut options = VerificationOptions::default();
-	options.allowed_audiences = Some(HashSet::from_strings(&["vote"]));
-	let result = context.public_key.public_key().verify_token::<VoteTokenClaim>(&content.vote_token, Some(options));
-	if let Ok(claim) = result {
-		let submit_json = WorkSubmitRest {
-			meta: generate_submit_metadata(&claim.custom.vote_id.ok_or(ServiceError::Forbidden)?, context),
-			works: content.work.clone(),
-		};
-		let post_result: PostResult = postJSON(&format!("http://{}/v1/work/", SUBMIT_HANDLER), submit_json).await?;
-		Ok(post_result)
-	} else {
-		return Err(ServiceError::Forbidden.into())
-	}
-}
-
-pub async fn submitPaperVote_impl(context: &Context, content: &PaperSubmitGQL) -> FieldResult<PostResult> {
-	println!("submitPaperVote_impl");
+pub async fn submitPaperVote_impl(context: &Context, content: &PaperSubmitGQL) -> FieldResult<bool> {
 	let mut options = VerificationOptions::default();
 	options.allowed_audiences = Some(HashSet::from_strings(&["vote"]));
 	let result = context.public_key.public_key().verify_token::<VoteTokenClaim>(&content.vote_token, Some(options));
 	if let Ok(claim) = result {
 		let submit_json = PaperSubmitRest {
-			meta: generate_submit_metadata(&claim.custom.vote_id.ok_or(ServiceError::Forbidden)?, context),
+			meta: generate_submit_metadata(&claim.custom.vote_id.ok_or(ServiceError::new_jwt_error(SERVICE_NAME, None))?, context),
 			papers_json: content.paper_json.clone()
 		};
-		let post_result: PostResult = postJSON(&format!("http://{}/v1/paper/", SUBMIT_HANDLER), submit_json).await?;
-		Ok(post_result)
+		let post_result: EmptyJSON = json_request_gateway(SERVICE_NAME, &format!("http://{}/v1/paper/", SUBMIT_HANDLER), submit_json).await?;
+		Ok(true)
 	} else {
-		return Err(ServiceError::Forbidden.into())
+		return Err(ServiceError::new_jwt_error(SERVICE_NAME, None).into());
 	}
 }
 
@@ -345,12 +330,12 @@ pub async fn getSubmitCharacterVote_impl(context: &Context, vote_token: String) 
 	let result = context.public_key.public_key().verify_token::<VoteTokenClaim>(&vote_token, Some(options));
 	if let Ok(claim) = result {
 		let query_json = QuerySubmitRest {
-			vote_id: claim.custom.vote_id.ok_or(ServiceError::Forbidden)?
+			vote_id: claim.custom.vote_id.ok_or(ServiceError::new_jwt_error(SERVICE_NAME, None))?
 		};
-		let post_result: CharacterSubmitRestQuery = postJSON(&format!("http://{}/v1/get-character/", SUBMIT_HANDLER), query_json).await?;
+		let post_result: CharacterSubmitRestQuery = json_request_gateway(SERVICE_NAME, &format!("http://{}/v1/get-character/", SUBMIT_HANDLER), query_json).await?;
 		Ok(post_result)
 	} else {
-		return Err(ServiceError::Forbidden.into())
+		return Err(ServiceError::new_jwt_error(SERVICE_NAME, None).into());
 	}
 }
 
@@ -360,12 +345,12 @@ pub async fn getSubmitMusicVote_impl(context: &Context, vote_token: String) -> F
 	let result = context.public_key.public_key().verify_token::<VoteTokenClaim>(&vote_token, Some(options));
 	if let Ok(claim) = result {
 		let query_json = QuerySubmitRest {
-			vote_id: claim.custom.vote_id.ok_or(ServiceError::Forbidden)?
+			vote_id: claim.custom.vote_id.ok_or(ServiceError::new_jwt_error(SERVICE_NAME, None))?
 		};
-		let post_result: MusicSubmitRestQuery = postJSON(&format!("http://{}/v1/get-music/", SUBMIT_HANDLER), query_json).await?;
+		let post_result: MusicSubmitRestQuery = json_request_gateway(SERVICE_NAME, &format!("http://{}/v1/get-music/", SUBMIT_HANDLER), query_json).await?;
 		Ok(post_result)
 	} else {
-		return Err(ServiceError::Forbidden.into())
+		return Err(ServiceError::new_jwt_error(SERVICE_NAME, None).into());
 	}
 }
 
@@ -375,12 +360,12 @@ pub async fn getSubmitCPVote_impl(context: &Context, vote_token: String) -> Fiel
 	let result = context.public_key.public_key().verify_token::<VoteTokenClaim>(&vote_token, Some(options));
 	if let Ok(claim) = result {
 		let query_json = QuerySubmitRest {
-			vote_id: claim.custom.vote_id.ok_or(ServiceError::Forbidden)?
+			vote_id: claim.custom.vote_id.ok_or(ServiceError::new_jwt_error(SERVICE_NAME, None))?
 		};
-		let post_result: CPSubmitRestQuery = postJSON(&format!("http://{}/v1/get-cp/", SUBMIT_HANDLER), query_json).await?;
+		let post_result: CPSubmitRestQuery = json_request_gateway(SERVICE_NAME, &format!("http://{}/v1/get-cp/", SUBMIT_HANDLER), query_json).await?;
 		Ok(post_result)
 	} else {
-		return Err(ServiceError::Forbidden.into())
+		return Err(ServiceError::new_jwt_error(SERVICE_NAME, None).into());
 	}
 }
 
@@ -390,12 +375,12 @@ pub async fn getSubmitPaperVote_impl(context: &Context, vote_token: String) -> F
 	let result = context.public_key.public_key().verify_token::<VoteTokenClaim>(&vote_token, Some(options));
 	if let Ok(claim) = result {
 		let query_json = QuerySubmitRest {
-			vote_id: claim.custom.vote_id.ok_or(ServiceError::Forbidden)?
+			vote_id: claim.custom.vote_id.ok_or(ServiceError::new_jwt_error(SERVICE_NAME, None))?
 		};
-		let post_result: PaperSubmitRestQuery = postJSON(&format!("http://{}/v1/get-paper/", SUBMIT_HANDLER), query_json).await?;
+		let post_result: PaperSubmitRestQuery = json_request_gateway(SERVICE_NAME, &format!("http://{}/v1/get-paper/", SUBMIT_HANDLER), query_json).await?;
 		Ok(post_result)
 	} else {
-		return Err(ServiceError::Forbidden.into())
+		return Err(ServiceError::new_jwt_error(SERVICE_NAME, None).into());
 	}
 }
 
@@ -405,11 +390,11 @@ pub async fn getVotingStatus_impl(context: &Context, vote_token: String) -> Fiel
 	let result = context.public_key.public_key().verify_token::<VoteTokenClaim>(&vote_token, Some(options));
 	if let Ok(claim) = result {
 		let query_json = QuerySubmitRest {
-			vote_id: claim.custom.vote_id.ok_or(ServiceError::Forbidden)?
+			vote_id: claim.custom.vote_id.ok_or(ServiceError::new_jwt_error(SERVICE_NAME, None))?
 		};
-		let post_result: VotingStatus = postJSON(&format!("http://{}/v1/voting-status/", SUBMIT_HANDLER), query_json).await?;
+		let post_result: VotingStatus = json_request_gateway(SERVICE_NAME, &format!("http://{}/v1/voting-status/", SUBMIT_HANDLER), query_json).await?;
 		Ok(post_result)
 	} else {
-		return Err(ServiceError::Forbidden.into())
+		return Err(ServiceError::new_jwt_error(SERVICE_NAME, None).into());
 	}
 }

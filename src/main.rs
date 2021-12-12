@@ -8,7 +8,6 @@ use std::sync::Arc;
 use actix_cors::Cors;
 use actix_web::http;
 use actix_web::{App, Error, HttpMessage, HttpResponse, HttpServer, client::ClientBuilder, cookie, middleware, web};
-use common::EmptyJSON;
 use context::Context;
 use juniper_actix::{
 	graphiql_handler as gqli_handler, graphql_handler, playground_handler as play_handler,

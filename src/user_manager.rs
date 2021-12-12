@@ -2,9 +2,10 @@
 use juniper::graphql_value;
 
 use juniper::FieldResult;
+use pvrustlib::EmptyJSON;
+use pvrustlib::json_request_gateway;
 
-use crate::common::postJSON;
-use crate::common::{Error, PostResult};
+use crate::common::SERVICE_NAME;
 use crate::context::Context;
 use crate::submit_handler::VotingStatus;
 
@@ -126,7 +127,7 @@ pub async fn login_email_password(context: &Context, email: String, password: St
 			additional_fingureprint: context.additional_fingureprint.clone()
 		}
 	};
-	Ok(postJSON(&format!("http://{}/v1/login-email-password", USER_MANAGER), submit_json).await?)
+	Ok(json_request_gateway(SERVICE_NAME, &format!("http://{}/v1/login-email-password", USER_MANAGER), submit_json).await?)
 }
 
 /// 新用户使用email帐号登录
@@ -140,7 +141,7 @@ pub async fn login_email(context: &Context,  email: String, nickname: Option<Str
 			additional_fingureprint: context.additional_fingureprint.clone()
 		}
 	};
-	Ok(postJSON(&format!("http://{}/v1/login-email", USER_MANAGER), submit_json).await?)
+	Ok(json_request_gateway(SERVICE_NAME, &format!("http://{}/v1/login-email", USER_MANAGER), submit_json).await?)
 }
 /// 向邮箱发送验证码
 pub async fn request_email_code(context: &Context, email: String) -> FieldResult<bool> {
@@ -151,7 +152,7 @@ pub async fn request_email_code(context: &Context, email: String) -> FieldResult
 			additional_fingureprint: context.additional_fingureprint.clone()
 		}
 	};
-	postJSON(&format!("http://{}/v1/send-email-code", USER_MANAGER), submit_json).await?;
+	json_request_gateway(SERVICE_NAME, &format!("http://{}/v1/send-email-code", USER_MANAGER), submit_json).await?;
 	Ok(true)
 }
 
@@ -166,7 +167,7 @@ pub async fn login_phone(context: &Context, phone: String, nickname: Option<Stri
 			additional_fingureprint: context.additional_fingureprint.clone()
 		}
 	};
-	Ok(postJSON(&format!("http://{}/v1/login-phone", USER_MANAGER), submit_json).await?)
+	Ok(json_request_gateway(SERVICE_NAME, &format!("http://{}/v1/login-phone", USER_MANAGER), submit_json).await?)
 }
 /// 向手机发送验证码
 pub async fn request_phone_code(context: &Context, phone: String) -> FieldResult<bool> {
@@ -177,7 +178,7 @@ pub async fn request_phone_code(context: &Context, phone: String) -> FieldResult
 			additional_fingureprint: context.additional_fingureprint.clone()
 		}
 	};
-	let t: crate::common::EmptyJSON = postJSON(&format!("http://{}/v1/send-sms-code", USER_MANAGER), submit_json).await?;
+	let t: EmptyJSON = json_request_gateway(SERVICE_NAME, &format!("http://{}/v1/send-sms-code", USER_MANAGER), submit_json).await?;
 	Ok(true)
 }
 
@@ -236,7 +237,7 @@ pub async fn update_email(context: &Context, user_token: String, email: String, 
 			additional_fingureprint: context.additional_fingureprint.clone()
 		}
 	};
-	let t: crate::common::EmptyJSON = postJSON(&format!("http://{}/v1/update-email", USER_MANAGER), submit_json).await?;
+	let t: EmptyJSON = json_request_gateway(SERVICE_NAME, &format!("http://{}/v1/update-email", USER_MANAGER), submit_json).await?;
 	Ok(true)
 }
 
@@ -250,7 +251,7 @@ pub async fn update_phone(context: &Context, user_token: String, phone: String, 
 			additional_fingureprint: context.additional_fingureprint.clone()
 		}
 	};
-	let t: crate::common::EmptyJSON = postJSON(&format!("http://{}/v1/update-phone", USER_MANAGER), submit_json).await?;
+	let t: EmptyJSON = json_request_gateway(SERVICE_NAME, &format!("http://{}/v1/update-phone", USER_MANAGER), submit_json).await?;
 	Ok(true)
 }
 
@@ -264,7 +265,7 @@ pub async fn update_password(context: &Context, user_token: String, old_password
 			additional_fingureprint: context.additional_fingureprint.clone()
 		}
 	};
-	let t: crate::common::EmptyJSON = postJSON(&format!("http://{}/v1/update-password", USER_MANAGER), submit_json).await?;
+	let t: EmptyJSON = json_request_gateway(SERVICE_NAME, &format!("http://{}/v1/update-password", USER_MANAGER), submit_json).await?;
 	Ok(true)
 }
 
@@ -273,7 +274,7 @@ pub async fn user_token_status(user_token: String, vote_token: Option<String>) -
 		user_token: user_token,
 		vote_token: vote_token
 	};
-	let t: crate::common::EmptyJSON = postJSON(&format!("http://{}/v1/user-token-status", USER_MANAGER), submit_json).await?;
+	let t: EmptyJSON = json_request_gateway(SERVICE_NAME, &format!("http://{}/v1/user-token-status", USER_MANAGER), submit_json).await?;
 	Ok(true)
 }
 
@@ -286,7 +287,7 @@ pub async fn remove_voter(context: &Context, user_token: String, old_password: O
 			additional_fingureprint: context.additional_fingureprint.clone()
 		}
 	};
-	let t: crate::common::EmptyJSON = postJSON(&format!("http://{}/v1/remove-voter", USER_MANAGER), submit_json).await?;
+	let t: EmptyJSON = json_request_gateway(SERVICE_NAME, &format!("http://{}/v1/remove-voter", USER_MANAGER), submit_json).await?;
 	Ok(true)
 }
 
