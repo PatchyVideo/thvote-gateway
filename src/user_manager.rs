@@ -9,7 +9,6 @@ use crate::common::SERVICE_NAME;
 use crate::context::Context;
 use crate::submit_handler::VotingStatus;
 
-use chrono::{DateTime, Utc};
 use serde_derive::{Serialize, Deserialize};
 use bson::oid::ObjectId;
 

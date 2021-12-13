@@ -12,7 +12,7 @@ use crate::common::VoteTokenClaim;
 use crate::context::Context;
 use jwt_simple::{prelude::*, algorithms::ECDSAP256kPublicKeyLike};
 
-use chrono::{DateTime, Utc};
+use bson::DateTime;
 use serde_derive::{Serialize, Deserialize};
 use bson::oid::ObjectId;
 
@@ -246,7 +246,7 @@ pub struct VotingStatus {
 pub fn generate_submit_metadata(vote_id: &str, context: &Context) -> SubmitMetadata {
 	SubmitMetadata {
 		vote_id: vote_id.to_string(),
-		created_at: bson::DateTime(chrono::Utc::now()),
+		created_at: DateTime::now(),
 		user_ip: context.user_ip.clone(),
 		additional_fingreprint: None, // TODO
 	}

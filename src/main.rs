@@ -7,7 +7,7 @@ use std::sync::Arc;
 
 use actix_cors::Cors;
 use actix_web::http;
-use actix_web::{App, Error, HttpMessage, HttpResponse, HttpServer, client::ClientBuilder, cookie, middleware, web};
+use actix_web::{App, Error, HttpMessage, HttpResponse, HttpServer, cookie, middleware, web};
 use context::Context;
 use juniper_actix::{
 	graphiql_handler as gqli_handler, graphql_handler, playground_handler as play_handler,
@@ -101,15 +101,15 @@ async fn main() -> io::Result<()> {
 	// Start http server
 	HttpServer::new(move || {
 		App::new()
-			.data(create_schema())
+			.app_data(web::Data::new(create_schema()))
 			.wrap(
 				Cors::default()
 				.allow_any_origin()
 				.allow_any_header()
 				.allow_any_method()
 			)
-			.wrap(middleware::Compress::default())
-			.wrap(middleware::Logger::default())
+			// .wrap(middleware::Compress::default())
+			// .wrap(middleware::Logger::default())
 			.service(
 				web::resource("/graphql")
 					.route(web::post().to(graphql))
