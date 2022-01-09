@@ -272,7 +272,7 @@ pub async fn submitCharacterVote_impl(context: &Context, content: &CharacterSubm
 		let post_result: EmptyJSON = json_request_gateway(SERVICE_NAME, &format!("http://{}/v1/character/", SUBMIT_HANDLER), submit_json).await?;
 		Ok(true)
 	} else {
-		return Err(ServiceError::new_jwt_error(SERVICE_NAME, None).into());
+		return Err(ServiceError::new_jwt_error(SERVICE_NAME, None).into_field_error());
 	}
 }
 
@@ -288,7 +288,7 @@ pub async fn submitMusicVote_impl(context: &Context, content: &MusicSubmitGQL) -
 		let post_result: EmptyJSON = json_request_gateway(SERVICE_NAME, &format!("http://{}/v1/music/", SUBMIT_HANDLER), submit_json).await?;
 		Ok(true)
 	} else {
-		return Err(ServiceError::new_jwt_error(SERVICE_NAME, None).into());
+		return Err(ServiceError::new_jwt_error(SERVICE_NAME, None).into_field_error());
 	}
 }
 
@@ -304,7 +304,7 @@ pub async fn submitCPVote_impl(context: &Context, content: &CPSubmitGQL) -> Fiel
 		let post_result: EmptyJSON = json_request_gateway(SERVICE_NAME, &format!("http://{}/v1/cp/", SUBMIT_HANDLER), submit_json).await?;
 		Ok(true)
 	} else {
-		return Err(ServiceError::new_jwt_error(SERVICE_NAME, None).into());
+		return Err(ServiceError::new_jwt_error(SERVICE_NAME, None).into_field_error());
 	}
 }
 
@@ -320,7 +320,7 @@ pub async fn submitPaperVote_impl(context: &Context, content: &PaperSubmitGQL) -
 		let post_result: EmptyJSON = json_request_gateway(SERVICE_NAME, &format!("http://{}/v1/paper/", SUBMIT_HANDLER), submit_json).await?;
 		Ok(true)
 	} else {
-		return Err(ServiceError::new_jwt_error(SERVICE_NAME, None).into());
+		return Err(ServiceError::new_jwt_error(SERVICE_NAME, None).into_field_error());
 	}
 }
 
@@ -335,7 +335,7 @@ pub async fn getSubmitCharacterVote_impl(context: &Context, vote_token: String) 
 		let post_result: CharacterSubmitRestQuery = json_request_gateway(SERVICE_NAME, &format!("http://{}/v1/get-character/", SUBMIT_HANDLER), query_json).await?;
 		Ok(post_result)
 	} else {
-		return Err(ServiceError::new_jwt_error(SERVICE_NAME, None).into());
+		return Err(ServiceError::new_jwt_error(SERVICE_NAME, None).into_field_error());
 	}
 }
 
@@ -350,7 +350,7 @@ pub async fn getSubmitMusicVote_impl(context: &Context, vote_token: String) -> F
 		let post_result: MusicSubmitRestQuery = json_request_gateway(SERVICE_NAME, &format!("http://{}/v1/get-music/", SUBMIT_HANDLER), query_json).await?;
 		Ok(post_result)
 	} else {
-		return Err(ServiceError::new_jwt_error(SERVICE_NAME, None).into());
+		return Err(ServiceError::new_jwt_error(SERVICE_NAME, None).into_field_error());
 	}
 }
 
@@ -365,7 +365,7 @@ pub async fn getSubmitCPVote_impl(context: &Context, vote_token: String) -> Fiel
 		let post_result: CPSubmitRestQuery = json_request_gateway(SERVICE_NAME, &format!("http://{}/v1/get-cp/", SUBMIT_HANDLER), query_json).await?;
 		Ok(post_result)
 	} else {
-		return Err(ServiceError::new_jwt_error(SERVICE_NAME, None).into());
+		return Err(ServiceError::new_jwt_error(SERVICE_NAME, None).into_field_error());
 	}
 }
 
@@ -380,7 +380,7 @@ pub async fn getSubmitPaperVote_impl(context: &Context, vote_token: String) -> F
 		let post_result: PaperSubmitRestQuery = json_request_gateway(SERVICE_NAME, &format!("http://{}/v1/get-paper/", SUBMIT_HANDLER), query_json).await?;
 		Ok(post_result)
 	} else {
-		return Err(ServiceError::new_jwt_error(SERVICE_NAME, None).into());
+		return Err(ServiceError::new_jwt_error(SERVICE_NAME, None).into_field_error());
 	}
 }
 
@@ -395,6 +395,6 @@ pub async fn getVotingStatus_impl(context: &Context, vote_token: String) -> Fiel
 		let post_result: VotingStatus = json_request_gateway(SERVICE_NAME, &format!("http://{}/v1/voting-status/", SUBMIT_HANDLER), query_json).await?;
 		Ok(post_result)
 	} else {
-		return Err(ServiceError::new_jwt_error(SERVICE_NAME, None).into());
+		return Err(ServiceError::new_jwt_error(SERVICE_NAME, None).into_field_error());
 	}
 }
