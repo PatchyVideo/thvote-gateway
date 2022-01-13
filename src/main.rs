@@ -8,6 +8,7 @@ use std::sync::Arc;
 use actix_cors::Cors;
 use actix_web::http;
 use actix_web::{App, Error, HttpMessage, HttpResponse, HttpServer, cookie, middleware, web};
+use chrono::Utc;
 use context::Context;
 use juniper_actix::{
 	graphiql_handler as gqli_handler, graphql_handler, playground_handler as play_handler,
@@ -90,6 +91,11 @@ async fn user_token_status(body: actix_web::web::Json<user_manager::TokenStatusI
 }
 
 
+async fn server_time() -> Result<String, Error> {
+	let now = Utc::now().to_rfc3339();
+	Ok(now.into())
+}
+
 #[actix_web::main]
 async fn main() -> io::Result<()> {
 	std::env::set_var("RUST_LOG", "actix_web=info");
@@ -118,6 +124,7 @@ async fn main() -> io::Result<()> {
 			.service(web::resource("/playground").route(web::get().to(playground_handler)))
 			.service(web::resource("/graphiql").route(web::get().to(graphiql_handler)))
 			.service(web::resource("/user-token-status").route(web::post().to(user_token_status)))
+			.service(web::resource("/server-time").route(web::get().to(server_time)))
 	})
 	.bind("0.0.0.0:80")?
 	.run()

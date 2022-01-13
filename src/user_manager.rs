@@ -199,6 +199,13 @@ pub struct UpdatePhoneInputs {
 }
 
 #[derive(Clone, Serialize, Deserialize)]
+pub struct UpdateNicknameInputs {
+	pub user_token: String,
+    pub nickname: String,
+    pub meta: UserEventMeta
+}
+
+#[derive(Clone, Serialize, Deserialize)]
 pub struct UpdatePasswordInputs {
 	pub user_token: String,
     pub old_password: Option<String>,
@@ -251,6 +258,19 @@ pub async fn update_phone(context: &Context, user_token: String, phone: String, 
 		}
 	};
 	let t: EmptyJSON = json_request_gateway(SERVICE_NAME, &format!("http://{}/v1/update-phone", USER_MANAGER), submit_json).await?;
+	Ok(true)
+}
+
+pub async fn update_nickname(context: &Context, user_token: String, new_nickname: String) -> FieldResult<bool> {
+	let submit_json = UpdateNicknameInputs {
+		nickname: new_nickname,
+		user_token: user_token,
+		meta: UserEventMeta {
+			user_ip: context.user_ip.clone(),
+			additional_fingureprint: context.additional_fingureprint.clone()
+		}
+	};
+	let t: EmptyJSON = json_request_gateway(SERVICE_NAME, &format!("http://{}/v1/update-nickname", USER_MANAGER), submit_json).await?;
 	Ok(true)
 }
 
