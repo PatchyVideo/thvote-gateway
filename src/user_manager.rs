@@ -96,7 +96,8 @@ pub struct Voter {
 	pub phone: Option<String>,
 	pub email: Option<String>,
 	pub thbwiki: bool,
-	pub patchyvideo: bool
+	pub patchyvideo: bool,
+	pub created_at: chrono::DateTime<chrono::Utc>,
 }
 
 #[derive(juniper::GraphQLObject, Clone, Serialize, Deserialize)]
