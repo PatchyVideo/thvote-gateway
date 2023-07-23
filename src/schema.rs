@@ -33,26 +33,6 @@ impl Query {
 	fn serverDate() -> DateTime<Utc> {
 		Utc::now()
 	}
-
-	// ------------------------------------------------
-	//     result_query
-	// ------------------------------------------------
-
-	// /// 人物投票理由
-	// fn character_reasons(name: String) -> FieldResult<Reasons> {
-	// 	result_query::character_reasons_impl(name)
-	// }
-
-	// /// 人物投票结果
-	// fn character_rank_result(filter: Option<FilterConditions>) -> FieldResult<CharacterRankResult> {
-	// 	result_query::character_rank_result_impl(filter)
-	// }
-
-	// /// 人物投票理由
-	// fn single_character_result(name: String, filter: Option<FilterConditions>) -> FieldResult<SingleCharacterResult> {
-	// 	result_query::single_character_result_impl(name, filter)
-	// }
-
 	
 	// ------------------------------------------------
 	//     vote data
